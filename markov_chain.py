@@ -33,6 +33,7 @@ def reachable( array ):
 def comm_class( array ):
     n = len(array)
     result = []
+    state_result = []
     reach = reachable(array)
     identity = np.identity(n, dtype="float")
     base = np.add(identity, reach)
@@ -59,11 +60,27 @@ def comm_class( array ):
                 else: 
                     c += 1
             result.append(com)
+            state_result.append(class_check(array, com))
         else:
             r += 1
-    print(array)
-    print(result)
-    return result
+    return result, state_result
+
+
+#Check if a class is transient or recurrent
+#recurrent = true, transient = false
+def class_check( array , nodes ):
+    recurrent = True
+    for r in range(0, len(nodes)):
+        row_sum = 0
+        for c in range(0, len(nodes)):
+            row_sum += array[r][c]
+        if (row_sum < 1):
+            recurrent = False
+            break
+    if (recurrent):
+        return "Recurrent"
+    return "Transient"
+
 
 #Check if rows r and c are identical in matrix X
 def rowCheck(X, r, c):
@@ -81,7 +98,7 @@ my_array1 = np.array([[0, 0, 1.0, 0, 0],
             [0, 0.50, 0.25, 0.25, 0], 
             [1.0, 0, 0, 0, 0],
             [0, 0, 0, 1.0, 0], 
-            [0, 0, 0.333, 0, 0.666]])
+            [0, 0, 0.33, 0, 0.67]])
 
 my_array2 = np.array([[0.5, 0, 0.5, 0], 
             [0, 0.5, 0, 0.5], 
@@ -97,6 +114,9 @@ my_array4 = np.array([[0, 1, 0],
             [0, 0, 1], 
             [1, 0, 0]])
 
-#Communicating states of the chain
-comm_class(my_array2)
+my_array5 = np.array([[0.5, 0.5], 
+                    [0.5, 0.5]])
 
+#Communicating states of the chain
+list_classes = comm_class(my_array4)
+print(list_classes)
